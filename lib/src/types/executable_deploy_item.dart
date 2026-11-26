@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
@@ -41,7 +40,8 @@ class ModuleBytesDeployItem extends ExecutableDeployItem {
   @NullableHexStringBytesJsonConverter()
   late Uint8List? moduleBytes;
 
-  factory ModuleBytesDeployItem.fromJson(Map<String, dynamic> json) => _$ModuleBytesDeployItemFromJson(json);
+  factory ModuleBytesDeployItem.fromJson(Map<String, dynamic> json) =>
+      _$ModuleBytesDeployItemFromJson(json);
   Map<String, dynamic> toJson() => _$ModuleBytesDeployItemToJson(this);
 
   @override
@@ -62,11 +62,13 @@ class ModuleBytesDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  ModuleBytesDeployItem.fromAmount(BigInt amount) : super.withArgs([NamedArg('amount', ClValue.u512(amount))]) {
+  ModuleBytesDeployItem.fromAmount(BigInt amount)
+      : super.withArgs([NamedArg('amount', ClValue.u512(amount))]) {
     moduleBytes = Uint8List.fromList([]);
   }
 
-  ModuleBytesDeployItem.fromBytes(this.moduleBytes, [List<NamedArg>? args]) : super.withArgs(args ?? []);
+  ModuleBytesDeployItem.fromBytes(this.moduleBytes, [List<NamedArg>? args])
+      : super.withArgs(args ?? []);
 
   ModuleBytesDeployItem() : super();
 }
@@ -98,7 +100,9 @@ class StoredContractByHashDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  StoredContractByHashDeployItem(this.hash, this.entryPoint, [List<NamedArg> args = const []]) : super.withArgs(args);
+  StoredContractByHashDeployItem(this.hash, this.entryPoint,
+      [List<NamedArg> args = const []])
+      : super.withArgs(args);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -129,7 +133,9 @@ class StoredContractByNameDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  StoredContractByNameDeployItem(this.name, this.entryPoint, [List<NamedArg> args = const []]) : super.withArgs(args);
+  StoredContractByNameDeployItem(this.name, this.entryPoint,
+      [List<NamedArg> args = const []])
+      : super.withArgs(args);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -141,9 +147,11 @@ class StoredVersionedContractByHashDeployItem extends ExecutableDeployItem {
 
   String entryPoint;
 
-  factory StoredVersionedContractByHashDeployItem.fromJson(Map<String, dynamic> json) =>
+  factory StoredVersionedContractByHashDeployItem.fromJson(
+          Map<String, dynamic> json) =>
       _$StoredVersionedContractByHashDeployItemFromJson(json);
-  Map<String, dynamic> toJson() => _$StoredVersionedContractByHashDeployItemToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$StoredVersionedContractByHashDeployItemToJson(this);
 
   @override
   int get tag => 0x03;
@@ -167,7 +175,9 @@ class StoredVersionedContractByHashDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  StoredVersionedContractByHashDeployItem(this.hash, this.version, this.entryPoint, [List<NamedArg> args = const []])
+  StoredVersionedContractByHashDeployItem(
+      this.hash, this.version, this.entryPoint,
+      [List<NamedArg> args = const []])
       : super.withArgs(args);
 }
 
@@ -179,9 +189,11 @@ class StoredVersionedContractByNameDeployItem extends ExecutableDeployItem {
 
   String entryPoint;
 
-  factory StoredVersionedContractByNameDeployItem.fromJson(Map<String, dynamic> json) =>
+  factory StoredVersionedContractByNameDeployItem.fromJson(
+          Map<String, dynamic> json) =>
       _$StoredVersionedContractByNameDeployItemFromJson(json);
-  Map<String, dynamic> toJson() => _$StoredVersionedContractByNameDeployItemToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$StoredVersionedContractByNameDeployItemToJson(this);
 
   @override
   int get tag => 0x04;
@@ -207,13 +219,16 @@ class StoredVersionedContractByNameDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  StoredVersionedContractByNameDeployItem(this.name, this.version, this.entryPoint, [List<NamedArg> args = const []])
+  StoredVersionedContractByNameDeployItem(
+      this.name, this.version, this.entryPoint,
+      [List<NamedArg> args = const []])
       : super.withArgs(args);
 }
 
 @JsonSerializable()
 class TransferDeployItem extends ExecutableDeployItem {
-  factory TransferDeployItem.fromJson(Map<String, dynamic> json) => _$TransferDeployItemFromJson(json);
+  factory TransferDeployItem.fromJson(Map<String, dynamic> json) =>
+      _$TransferDeployItemFromJson(json);
   Map<String, dynamic> toJson() => _$TransferDeployItemToJson(this);
 
   @override
@@ -228,7 +243,9 @@ class TransferDeployItem extends ExecutableDeployItem {
     return mem.toBytes();
   }
 
-  TransferDeployItem.transfer(BigInt amount, AccountHashKey targetAccount, [int? id]) : super() {
+  TransferDeployItem.transfer(BigInt amount, AccountHashKey targetAccount,
+      [int? id])
+      : super() {
     args = [
       NamedArg(
         'amount',
@@ -240,14 +257,17 @@ class TransferDeployItem extends ExecutableDeployItem {
       ),
       NamedArg(
         'id',
-        id == null ? ClValue.optionNone(ClTypeDescriptor(ClType.u64)) : ClValue.option(ClValue.u64(id)),
+        id == null
+            ? ClValue.optionNone(ClTypeDescriptor(ClType.u64))
+            : ClValue.option(ClValue.u64(id)),
       ),
     ];
   }
   TransferDeployItem() : super();
 }
 
-class NamedArgsJsonConverter extends JsonConverter<List<NamedArg>, List<dynamic>> {
+class NamedArgsJsonConverter
+    extends JsonConverter<List<NamedArg>, List<dynamic>> {
   const NamedArgsJsonConverter();
 
   @override
@@ -275,7 +295,8 @@ class NamedArgsJsonConverter extends JsonConverter<List<NamedArg>, List<dynamic>
   }
 }
 
-class ExecutableDeployItemJsonConverter implements JsonConverter<ExecutableDeployItem, Map<String, dynamic>> {
+class ExecutableDeployItemJsonConverter
+    implements JsonConverter<ExecutableDeployItem, Map<String, dynamic>> {
   const ExecutableDeployItemJsonConverter();
 
   @override
@@ -304,7 +325,7 @@ class ExecutableDeployItemJsonConverter implements JsonConverter<ExecutableDeplo
 
   @override
   Map<String, dynamic> toJson(ExecutableDeployItem value) {
-     if (value is ModuleBytesDeployItem) {
+    if (value is ModuleBytesDeployItem) {
       return value.toJson();
     } else if (value is StoredContractByNameDeployItem) {
       return value.toJson();

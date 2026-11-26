@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:buffer/buffer.dart';
-import 'package:casper_dart_sdk/casper_dart_sdk.dart';
 import 'package:convert/convert.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pointycastle/digests/blake2b.dart';
@@ -11,12 +10,12 @@ import 'package:casper_dart_sdk/src/crpyt/key_pair.dart';
 import 'package:casper_dart_sdk/src/helpers/checksummed_hex.dart';
 import 'package:casper_dart_sdk/src/helpers/string_utils.dart';
 import 'package:casper_dart_sdk/src/serde/byte_serializable.dart';
-import 'package:casper_dart_sdk/src/types/global_state_key.dart';
 import 'package:casper_dart_sdk/src/types/cl_public_key.dart';
 import 'package:casper_dart_sdk/src/types/cl_signature.dart';
+import 'package:casper_dart_sdk/src/types/cl_value.dart';
+import 'package:casper_dart_sdk/src/types/executable_deploy_item.dart';
+import 'package:casper_dart_sdk/src/types/global_state_key.dart';
 import 'package:casper_dart_sdk/src/types/named_arg.dart';
-
-import 'executable_deploy_item.dart';
 
 part 'generated/deploy.g.dart';
 
@@ -54,8 +53,11 @@ class Deploy implements ByteSerializable {
   /// [idTransfer] is the id of the transfer. Can be null if not needed.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.standardTransfer(ClPublicKey from, ClPublicKey to, BigInt amount, BigInt paymentAmount, String chainName,
-      [int? idTransfer, int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
+  Deploy.standardTransfer(ClPublicKey from, ClPublicKey to, BigInt amount,
+      BigInt paymentAmount, String chainName,
+      [int? idTransfer,
+      int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       from,
       DateTime.now(),
@@ -65,7 +67,8 @@ class Deploy implements ByteSerializable {
       chainName,
     );
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
-    session = TransferDeployItem.transfer(amount, AccountHashKey.fromPublicKey(to), idTransfer);
+    session = TransferDeployItem.transfer(
+        amount, AccountHashKey.fromPublicKey(to), idTransfer);
     header.bodyHash = Cep57Checksum.encode(bodyHash);
     hash = Cep57Checksum.encode(headerHash);
   }
@@ -77,7 +80,8 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the deploy.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.contract(Uint8List wasmBytes, ClPublicKey instigator, BigInt paymentAmount, String chainName,
+  Deploy.contract(Uint8List wasmBytes, ClPublicKey instigator,
+      BigInt paymentAmount, String chainName,
       [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       instigator,
@@ -103,9 +107,15 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.contractCall(String contractName, String contractEntryPoint, List<NamedArg> args, ClPublicKey caller,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
+  Deploy.contractCall(
+      String contractName,
+      String contractEntryPoint,
+      List<NamedArg> args,
+      ClPublicKey caller,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       caller,
       DateTime.now(),
@@ -116,7 +126,8 @@ class Deploy implements ByteSerializable {
     );
 
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
-    session = StoredContractByNameDeployItem(contractName, contractEntryPoint, args);
+    session =
+        StoredContractByNameDeployItem(contractName, contractEntryPoint, args);
     header.bodyHash = Cep57Checksum.encode(bodyHash);
     hash = Cep57Checksum.encode(headerHash);
   }
@@ -130,9 +141,15 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.contractCallByContractHash(HashKey contractHash, String contractEntryPoint, List<NamedArg> args, ClPublicKey caller,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
+  Deploy.contractCallByContractHash(
+      HashKey contractHash,
+      String contractEntryPoint,
+      List<NamedArg> args,
+      ClPublicKey caller,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       caller,
       DateTime.now(),
@@ -143,7 +160,8 @@ class Deploy implements ByteSerializable {
     );
 
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
-    session = StoredContractByHashDeployItem(contractHash.key, contractEntryPoint, args);
+    session = StoredContractByHashDeployItem(
+        contractHash.key, contractEntryPoint, args);
     header.bodyHash = Cep57Checksum.encode(bodyHash);
     hash = Cep57Checksum.encode(headerHash);
   }
@@ -159,9 +177,16 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.versionedContractCall(String contractName, int? version, String contractEntryPoint, List<NamedArg> args,
-      ClPublicKey caller, BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
+  Deploy.versionedContractCall(
+      String contractName,
+      int? version,
+      String contractEntryPoint,
+      List<NamedArg> args,
+      ClPublicKey caller,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       caller,
       DateTime.now(),
@@ -172,7 +197,8 @@ class Deploy implements ByteSerializable {
     );
 
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
-    session = StoredVersionedContractByNameDeployItem(contractName, version, contractEntryPoint, args);
+    session = StoredVersionedContractByNameDeployItem(
+        contractName, version, contractEntryPoint, args);
     header.bodyHash = Cep57Checksum.encode(bodyHash);
     hash = Cep57Checksum.encode(headerHash);
   }
@@ -188,9 +214,16 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.versionedContractCallByContractHash(HashKey contractHash, int? version, String contractEntryPoint,
-      List<NamedArg> args, ClPublicKey caller, BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
+  Deploy.versionedContractCallByContractHash(
+      HashKey contractHash,
+      int? version,
+      String contractEntryPoint,
+      List<NamedArg> args,
+      ClPublicKey caller,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
     header = DeployHeader.withoutBodyHash(
       caller,
       DateTime.now(),
@@ -201,11 +234,12 @@ class Deploy implements ByteSerializable {
     );
 
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
-    session = StoredVersionedContractByHashDeployItem(contractHash.key, version, contractEntryPoint, args);
+    session = StoredVersionedContractByHashDeployItem(
+        contractHash.key, version, contractEntryPoint, args);
     header.bodyHash = Cep57Checksum.encode(bodyHash);
     hash = Cep57Checksum.encode(headerHash);
   }
-  
+
   /// Creates a [Deploy] object to delegate tokens to a validator for staking.
   /// [delegateContractWasm] is the array of bytes containing the delegation contract (compiled in Wasm).
   /// [from] is the public key of the account that delegates the tokens.
@@ -215,10 +249,17 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.delegateTokens(Uint8List delegateContractWasm, ClPublicKey from, ClPublicKey validator, BigInt amount,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
-    header = DeployHeader.withoutBodyHash(from, DateTime.now(), ttl, gasPrice, [], chainName);
+  Deploy.delegateTokens(
+      Uint8List delegateContractWasm,
+      ClPublicKey from,
+      ClPublicKey validator,
+      BigInt amount,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
+    header = DeployHeader.withoutBodyHash(
+        from, DateTime.now(), ttl, gasPrice, [], chainName);
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
     session = ModuleBytesDeployItem.fromBytes(delegateContractWasm);
     session.args.add(NamedArg("validator", ClValue.publicKey(validator)));
@@ -237,10 +278,17 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.undelegateTokens(Uint8List undelegateContractWasm, ClPublicKey from, ClPublicKey validator, BigInt amount,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
-    header = DeployHeader.withoutBodyHash(from, DateTime.now(), ttl, gasPrice, [], chainName);
+  Deploy.undelegateTokens(
+      Uint8List undelegateContractWasm,
+      ClPublicKey from,
+      ClPublicKey validator,
+      BigInt amount,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
+    header = DeployHeader.withoutBodyHash(
+        from, DateTime.now(), ttl, gasPrice, [], chainName);
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
     session = ModuleBytesDeployItem.fromBytes(undelegateContractWasm);
     session.args.add(NamedArg("validator", ClValue.publicKey(validator)));
@@ -250,10 +298,18 @@ class Deploy implements ByteSerializable {
     hash = Cep57Checksum.encode(headerHash);
   }
 
-  Deploy.callAuctionContract(HashKey contractHash, String entryPoint, ClPublicKey from, ClPublicKey validator,
-      BigInt amount, BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
-    header = DeployHeader.withoutBodyHash(from, DateTime.now(), ttl, gasPrice, [], chainName);
+  Deploy.callAuctionContract(
+      HashKey contractHash,
+      String entryPoint,
+      ClPublicKey from,
+      ClPublicKey validator,
+      BigInt amount,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
+    header = DeployHeader.withoutBodyHash(
+        from, DateTime.now(), ttl, gasPrice, [], chainName);
     payment = ModuleBytesDeployItem.fromAmount(paymentAmount);
     session = StoredContractByHashDeployItem(contractHash.toHex(), entryPoint, [
       NamedArg("validator", ClValue.publicKey(validator)),
@@ -274,11 +330,17 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.delegateTokensByContractHash(HashKey contractHash, ClPublicKey from, ClPublicKey validator, BigInt amount,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
-    Deploy.callAuctionContract(
-        contractHash, "delegate", from, validator, amount, paymentAmount, chainName, gasPrice, ttl);
+  Deploy.delegateTokensByContractHash(
+      HashKey contractHash,
+      ClPublicKey from,
+      ClPublicKey validator,
+      BigInt amount,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
+    Deploy.callAuctionContract(contractHash, "delegate", from, validator,
+        amount, paymentAmount, chainName, gasPrice, ttl);
   }
 
   /// Creates a [Deploy] object to call the auction contract to delegate tokens to a validator for staking.
@@ -291,16 +353,25 @@ class Deploy implements ByteSerializable {
   /// [chainName] is the name of the network that will execute the call.
   /// [gasPrice] is the gas price. Default value is 1.
   /// [ttl] is the validity period of the Deploy since creation. Default value is 30 minutes.
-  Deploy.undelegateTokensByContractHash(HashKey contractHash, ClPublicKey from, ClPublicKey validator, BigInt amount,
-      BigInt paymentAmount, String chainName,
-      [int gasPrice = 1, Duration ttl = const Duration(minutes: 30)]) {
-    Deploy.callAuctionContract(
-        contractHash, "undelegate", from, validator, amount, paymentAmount, chainName, gasPrice, ttl);
+  Deploy.undelegateTokensByContractHash(
+      HashKey contractHash,
+      ClPublicKey from,
+      ClPublicKey validator,
+      BigInt amount,
+      BigInt paymentAmount,
+      String chainName,
+      [int gasPrice = 1,
+      Duration ttl = const Duration(minutes: 30)]) {
+    Deploy.callAuctionContract(contractHash, "undelegate", from, validator,
+        amount, paymentAmount, chainName, gasPrice, ttl);
   }
 
   Future<Uint8List> sign(KeyPair pair) async {
-    Uint8List signatureBytes = await pair.sign(Uint8List.fromList(hex.decode(hash)));
-    addApproval(DeployApproval(ClSignature.fromBytes(signatureBytes, pair.publicKey.keyAlgorithm), pair.publicKey));
+    Uint8List signatureBytes =
+        await pair.sign(Uint8List.fromList(hex.decode(hash)));
+    addApproval(DeployApproval(
+        ClSignature.fromBytes(signatureBytes, pair.publicKey.keyAlgorithm),
+        pair.publicKey));
     return signatureBytes;
   }
 
@@ -313,7 +384,8 @@ class Deploy implements ByteSerializable {
   /// returns the public key of the signer that failed to verify
   Future<ClPublicKey?> verifySignatures() async {
     for (DeployApproval approval in approvals) {
-      if (!(await approval.signer.verify(Uint8List.fromList(hex.decode(hash)), approval.signature.bytes))) {
+      if (!(await approval.signer.verify(
+          Uint8List.fromList(hex.decode(hash)), approval.signature.bytes))) {
         return approval.signer;
       }
     }
@@ -378,12 +450,14 @@ class DeployHeader implements ByteSerializable {
 
   String chainName;
 
-  factory DeployHeader.fromJson(Map<String, dynamic> json) => _$DeployHeaderFromJson(json);
+  factory DeployHeader.fromJson(Map<String, dynamic> json) =>
+      _$DeployHeaderFromJson(json);
   Map<String, dynamic> toJson() => _$DeployHeaderToJson(this);
 
-  DeployHeader(this.account, this.timestamp, this.ttl, this.gasPrice, this.bodyHash, this.dependencies, this.chainName);
-  DeployHeader.withoutBodyHash(
-      this.account, this.timestamp, this.ttl, this.gasPrice, this.dependencies, this.chainName);
+  DeployHeader(this.account, this.timestamp, this.ttl, this.gasPrice,
+      this.bodyHash, this.dependencies, this.chainName);
+  DeployHeader.withoutBodyHash(this.account, this.timestamp, this.ttl,
+      this.gasPrice, this.dependencies, this.chainName);
 
   @override
   Uint8List toBytes() {
@@ -411,7 +485,8 @@ class DeployApproval implements ByteSerializable {
   @ClPublicKeyJsonConverter()
   ClPublicKey signer;
 
-  factory DeployApproval.fromJson(Map<String, dynamic> json) => _$DeployApprovalFromJson(json);
+  factory DeployApproval.fromJson(Map<String, dynamic> json) =>
+      _$DeployApprovalFromJson(json);
 
   Map<String, dynamic> toJson() => _$DeployApprovalToJson(this);
 
@@ -455,7 +530,8 @@ class DeployInfo {
   @TransferKeyJsonConverter()
   List<TransferKey> transfers;
 
-  factory DeployInfo.fromJson(Map<String, dynamic> json) => _$DeployInfoFromJson(json);
+  factory DeployInfo.fromJson(Map<String, dynamic> json) =>
+      _$DeployInfoFromJson(json);
   Map<String, dynamic> toJson() => _$DeployInfoToJson(this);
 
   DeployInfo(this.deployHash, this.from, this.gas, this.source, this.transfers);

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:casper_dart_sdk/src/http/casper_node_client.dart';
 import 'package:casper_dart_sdk/src/jsonrpc/get_account_info.dart';
 import 'package:casper_dart_sdk/src/jsonrpc/get_auction_info.dart';
@@ -70,26 +68,32 @@ class CasperClient {
   }
 
   /// Requests a purse’s balance from the network.
-  Future<GetBalanceResult> getBalance(Uref purseUref, [String? stateRootHash]) async {
-    stateRootHash ??= await getStateRootHash().then((result) => result.stateRootHash);
+  Future<GetBalanceResult> getBalance(Uref purseUref,
+      [String? stateRootHash]) async {
+    stateRootHash ??=
+        await getStateRootHash().then((result) => result.stateRootHash);
     return _nodeClient.getBalance(GetBalanceParams(purseUref, stateRootHash!));
   }
 
   /// Requests the information about the account with given [publicKey] from the network.
   /// If no [blockId] is specified, the latest information will be requested.
-  Future<GetAccountInfoResult> getAccountInfo(ClPublicKey publicKey, [BlockId? blockId]) async {
+  Future<GetAccountInfoResult> getAccountInfo(ClPublicKey publicKey,
+      [BlockId? blockId]) async {
     return _nodeClient.getAccountInfo(GetAccountInfoParams(publicKey, blockId));
   }
 
   /// Queries a global state and returns the stored value from the network
-  Future<QueryGlobalStateResult> queryGlobalState(String key, String hash, bool isBlockHash,
+  Future<QueryGlobalStateResult> queryGlobalState(
+      String key, String hash, bool isBlockHash,
       [List<String> path = const []]) async {
-    return _nodeClient.queryGlobalState(QueryGlobalStateParams.fromPair(key, hash, isBlockHash, path));
+    return _nodeClient.queryGlobalState(
+        QueryGlobalStateParams.fromPair(key, hash, isBlockHash, path));
   }
 
   /// [Deprecated] Use [queryGlobalState] instead.
   /// Queries a state item and returns the stored value from the network
-  Future<GetItemResult> getItem(String key, [String? stateRootHash, List<String> path = const []]) async {
+  Future<GetItemResult> getItem(String key,
+      [String? stateRootHash, List<String> path = const []]) async {
     stateRootHash ??= (await getStateRootHash()).stateRootHash;
     return _nodeClient.getItem(GetItemParams(key, stateRootHash, path));
   }
@@ -97,10 +101,12 @@ class CasperClient {
   /// Queries a dictionary item and returns the stored value from the network
   /// [dictionaryItemKey] is the key of the dictionary item to query.
   /// [stateRootHash] is the state root hash of the block.
-  Future<GetDictionaryItemResult> getDictionaryItem(String dictionaryItemKey, [String? stateRootHash]) async {
+  Future<GetDictionaryItemResult> getDictionaryItem(String dictionaryItemKey,
+      [String? stateRootHash]) async {
     stateRootHash ??= (await getStateRootHash()).stateRootHash;
-    return _nodeClient
-        .getDictionaryItem(GetDictionaryItemParams.fromDictionaryItemKey(dictionaryItemKey, stateRootHash));
+    return _nodeClient.getDictionaryItem(
+        GetDictionaryItemParams.fromDictionaryItemKey(
+            dictionaryItemKey, stateRootHash));
   }
 
   /// Queries a dictionary item from an account's named keys.
@@ -112,8 +118,8 @@ class CasperClient {
       String accountKey, String dictionaryName, String dictionaryItemKey,
       [String? stateRootHash]) async {
     stateRootHash ??= (await getStateRootHash()).stateRootHash;
-    return _nodeClient.getDictionaryItem(
-        GetDictionaryItemParams.withAccountKey(accountKey, dictionaryName, dictionaryItemKey, stateRootHash));
+    return _nodeClient.getDictionaryItem(GetDictionaryItemParams.withAccountKey(
+        accountKey, dictionaryName, dictionaryItemKey, stateRootHash));
   }
 
   /// Queries a dictionary item from a contract's named keys.
@@ -126,24 +132,28 @@ class CasperClient {
       [String? stateRootHash]) async {
     stateRootHash ??= (await getStateRootHash()).stateRootHash;
     return _nodeClient.getDictionaryItem(
-        GetDictionaryItemParams.withContractKey(contractKey, dictionaryName, dictionaryItemKey, stateRootHash));
+        GetDictionaryItemParams.withContractKey(
+            contractKey, dictionaryName, dictionaryItemKey, stateRootHash));
   }
 
   /// Queries a dictionary item via it's seed URef.
   /// [seedUref] is the dictionary's seed URef.
   /// [dictionaryItemKey] is the key of the dictionary item to query.
   /// [stateRootHash] is the state root hash of the block.
-  Future<GetDictionaryItemResult> getDictionaryItemByUref(Uref seedUref, String dictionaryItemKey,
+  Future<GetDictionaryItemResult> getDictionaryItemByUref(
+      Uref seedUref, String dictionaryItemKey,
       [String? stateRootHash]) async {
     stateRootHash ??= (await getStateRootHash()).stateRootHash;
-    return _nodeClient
-        .getDictionaryItem(GetDictionaryItemParams.withSeedUref(seedUref, dictionaryItemKey, stateRootHash));
+    return _nodeClient.getDictionaryItem(GetDictionaryItemParams.withSeedUref(
+        seedUref, dictionaryItemKey, stateRootHash));
   }
 
   /// Requests an [EraInfo] from the network given a switch block.
   /// For a non-switch block this method returns an empty response.
-  Future<GetEraInfoBySwitchBlockResult> getEraInfoBySwitchBlock([BlockId? blockId]) async {
-    return _nodeClient.getEraInfoBySwitchBlock(GetEraInfoBySwitchBlockParams(blockId));
+  Future<GetEraInfoBySwitchBlockResult> getEraInfoBySwitchBlock(
+      [BlockId? blockId]) async {
+    return _nodeClient
+        .getEraInfoBySwitchBlock(GetEraInfoBySwitchBlockParams(blockId));
   }
 
   /// Requests the bids and validators at a given block.
@@ -155,7 +165,8 @@ class CasperClient {
   /// [PutDeployResult] contains the hash of the deploy.
   Future<PutDeployResult> putDeploy(Deploy deploy) async {
     if (deploy.approvals.isEmpty) {
-      throw ArgumentError('Deploy must be signed before sending to the network');
+      throw ArgumentError(
+          'Deploy must be signed before sending to the network');
     }
     return _nodeClient.putDeploy(PutDeployParams(deploy));
   }
@@ -165,7 +176,8 @@ class CasperClient {
   /// [PutDeployResult] contains the hash of the deploy.
   Future<PutDeployResult> putDeployJson(Map<String, dynamic> deployJson) async {
     if (deployJson['deploy']['approvals'].isEmpty) {
-      throw ArgumentError('Deploy must be signed before sending to the network');
+      throw ArgumentError(
+          'Deploy must be signed before sending to the network');
     }
     return _nodeClient.putDeployJson(deployJson);
   }

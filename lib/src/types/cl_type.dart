@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:buffer/buffer.dart';
 import 'package:casper_dart_sdk/src/serde/byte_serializable.dart';
-import 'package:casper_dart_sdk/src/types/global_state_key.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:casper_dart_sdk/src/helpers/string_utils.dart';
@@ -151,7 +150,8 @@ class ClTuple1TypeDescriptor extends ClTypeDescriptor {
 class ClTuple2TypeDescriptor extends ClTypeDescriptor {
   final ClTypeDescriptor firstType;
   final ClTypeDescriptor secondType;
-  ClTuple2TypeDescriptor(this.firstType, this.secondType) : super(ClType.tuple2);
+  ClTuple2TypeDescriptor(this.firstType, this.secondType)
+      : super(ClType.tuple2);
 
   @override
   Uint8List toBytes() {
@@ -170,7 +170,8 @@ class ClTuple3TypeDescriptor extends ClTypeDescriptor {
   final ClTypeDescriptor firstType;
   final ClTypeDescriptor secondType;
   final ClTypeDescriptor thirdType;
-  ClTuple3TypeDescriptor(this.firstType, this.secondType, this.thirdType) : super(ClType.tuple3);
+  ClTuple3TypeDescriptor(this.firstType, this.secondType, this.thirdType)
+      : super(ClType.tuple3);
 
   @override
   Uint8List toBytes() {
@@ -186,15 +187,16 @@ class ClTuple3TypeDescriptor extends ClTypeDescriptor {
   List<Object?> get props => [firstType, secondType, thirdType, ...super.props];
 }
 
-class ClTypeDescriptorJsonConverter implements JsonConverter<ClTypeDescriptor, dynamic> {
+class ClTypeDescriptorJsonConverter
+    implements JsonConverter<ClTypeDescriptor, dynamic> {
   const ClTypeDescriptorJsonConverter();
 
   @override
   ClTypeDescriptor fromJson(dynamic json) {
     // If json is string, convert it to ClType
     if (json is String) {
-      return ClTypeDescriptor(
-          ClType.values.firstWhere((type) => type.toString().toLowerCase() == "cltype." + json.toLowerCase()));
+      return ClTypeDescriptor(ClType.values.firstWhere((type) =>
+          type.toString().toLowerCase() == "cltype.${json.toLowerCase()}"));
     } else if (json is Map<String, dynamic>) {
       if (json.containsKey('Option')) {
         return ClOptionTypeDescriptor(fromJson(json['Option']));
@@ -204,10 +206,12 @@ class ClTypeDescriptorJsonConverter implements JsonConverter<ClTypeDescriptor, d
         return ClByteArrayTypeDescriptor(json['ByteArray']);
       } else if (json.containsKey('Result')) {
         final result = json['Result'];
-        return ClResultTypeDescriptor(fromJson(result['ok']), fromJson(result['err']));
+        return ClResultTypeDescriptor(
+            fromJson(result['ok']), fromJson(result['err']));
       } else if (json.containsKey('Map')) {
         final map = json['Map'];
-        return ClMapTypeDescriptor(fromJson(map['key']), fromJson(map['value']));
+        return ClMapTypeDescriptor(
+            fromJson(map['key']), fromJson(map['value']));
       } else if (json.containsKey('Tuple1')) {
         return ClTuple1TypeDescriptor(fromJson(json['Tuple1'][0]));
       } else if (json.containsKey('Tuple2')) {
@@ -215,7 +219,8 @@ class ClTypeDescriptorJsonConverter implements JsonConverter<ClTypeDescriptor, d
         return ClTuple2TypeDescriptor(fromJson(tuple2[0]), fromJson(tuple2[1]));
       } else if (json.containsKey('Tuple3')) {
         final tuple3 = json['Tuple3'];
-        return ClTuple3TypeDescriptor(fromJson(tuple3[0]), fromJson(tuple3[1]), fromJson(tuple3[2]));
+        return ClTuple3TypeDescriptor(
+            fromJson(tuple3[0]), fromJson(tuple3[1]), fromJson(tuple3[2]));
       } else {
         throw Exception('Unknown type $json');
       }
@@ -250,7 +255,11 @@ class ClTypeDescriptorJsonConverter implements JsonConverter<ClTypeDescriptor, d
       };
     } else if (value is ClTuple3TypeDescriptor) {
       return {
-        'Tuple3': [toJson(value.firstType), toJson(value.secondType), toJson(value.thirdType)]
+        'Tuple3': [
+          toJson(value.firstType),
+          toJson(value.secondType),
+          toJson(value.thirdType)
+        ]
       };
     } else {
       return capitalizeFirstLetter(value.type.toString().split('.').last);

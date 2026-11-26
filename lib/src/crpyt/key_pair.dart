@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:basic_utils/basic_utils.dart';
-import 'package:casper_dart_sdk/casper_dart_sdk.dart';
+import 'package:casper_dart_sdk/src/types/cl_public_key.dart';
+import 'package:casper_dart_sdk/src/types/key_algorithm.dart';
 import 'package:casper_dart_sdk/src/helpers/cryptography_utils.dart';
 import 'package:casper_dart_sdk/src/helpers/byte_utils.dart';
 import 'package:cryptography/cryptography.dart' as crypt;
@@ -50,11 +51,14 @@ class Secp256k1KeyPair extends KeyPair {
 
   /// Loads a key pair from a PEM file [pemFile] containing the private key.
   static Future<Secp256k1KeyPair> loadFromPem(File pemFile) async {
-    final pc.ECPrivateKey pcPrivateKey = CryptoUtils.ecPrivateKeyFromPem(await pemFile.readAsString());
+    final pc.ECPrivateKey pcPrivateKey =
+        CryptoUtils.ecPrivateKeyFromPem(await pemFile.readAsString());
     // Derive public key from private key
-    secp256k1.PublicKey secp256k1PublicKey = secp256k1.PrivateKey(pcPrivateKey.d!).publicKey;
+    secp256k1.PublicKey secp256k1PublicKey =
+        secp256k1.PrivateKey(pcPrivateKey.d!).publicKey;
     final domainParameters = pcPrivateKey.parameters!;
-    final point = domainParameters.curve.createPoint(secp256k1PublicKey.X, secp256k1PublicKey.Y);
+    final point = domainParameters.curve
+        .createPoint(secp256k1PublicKey.X, secp256k1PublicKey.Y);
     ECPublicKey pcPublicKey = ECPublicKey(point, domainParameters);
     return Secp256k1KeyPair(pcPublicKey, pcPrivateKey);
   }
@@ -62,7 +66,8 @@ class Secp256k1KeyPair extends KeyPair {
   @override
   Future<Uint8List> sign(Uint8List message) {
     return Future(() {
-      ECSignature signature = CryptoUtils.ecSign(_privateKey, message, algorithmName: "SHA-256/ECDSA");
+      ECSignature signature = CryptoUtils.ecSign(_privateKey, message,
+          algorithmName: "SHA-256/ECDSA");
       return secp256k1SignatureToBytes(signature);
     });
   }
@@ -70,8 +75,10 @@ class Secp256k1KeyPair extends KeyPair {
   @override
   Future<bool> verify(Uint8List message, Uint8List signatureBytes) {
     return Future(() {
-      final ECSignature signature = secp256k1SignatureBytesToECSignature(signatureBytes);
-      return CryptoUtils.ecVerify(_publicKey, message, signature, algorithm: "SHA-256/ECDSA");
+      final ECSignature signature =
+          secp256k1SignatureBytesToECSignature(signatureBytes);
+      return CryptoUtils.ecVerify(_publicKey, message, signature,
+          algorithm: "SHA-256/ECDSA");
     });
   }
 }
@@ -83,7 +90,8 @@ class Ed25519KeyPair extends KeyPair {
 
   Future<ClPublicKey> initializeClPublicKey() async {
     final cryptographySimplePublicKey = await _keyPair.extractPublicKey();
-    final publicKeyBytes = Uint8List.fromList(cryptographySimplePublicKey.bytes);
+    final publicKeyBytes =
+        Uint8List.fromList(cryptographySimplePublicKey.bytes);
     publicKey = ClPublicKey(publicKeyBytes, KeyAlgorithm.ed25519);
     return publicKey;
   }
@@ -119,14 +127,16 @@ class Ed25519KeyPair extends KeyPair {
 
   @override
   Future<Uint8List> sign(Uint8List message) async {
-    final signature = await crypt.Ed25519().sign(message.toList(), keyPair: _keyPair);
+    final signature =
+        await crypt.Ed25519().sign(message.toList(), keyPair: _keyPair);
     return Uint8List.fromList(signature.bytes);
   }
 
   @override
   Future<bool> verify(Uint8List message, Uint8List signatureBytes) async {
     final crpytographyPublicKey = await _keyPair.extractPublicKey();
-    final crypt.Signature signature = crypt.Signature(signatureBytes.toList(), publicKey: crpytographyPublicKey);
+    final crypt.Signature signature = crypt.Signature(signatureBytes.toList(),
+        publicKey: crpytographyPublicKey);
     return crypt.Ed25519().verify(message.toList(), signature: signature);
   }
 }

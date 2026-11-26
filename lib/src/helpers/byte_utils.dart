@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pointycastle/src/utils.dart' as utils;
 
 Iterable<int> bytesToNibbles(List<int> bytes) {
   // Returns an iterator that yields the nibbles of the given bytes.
@@ -44,12 +43,21 @@ Uint8List convertToLittleEndian(Uint8List bytes) {
 }
 
 Uint8List encodeUnsignedBigIntAsLittleEndian(BigInt number) {
-  Uint8List bytesAsBigEndian = utils.encodeBigIntAsUnsigned(number);
+  Uint8List bytesAsBigEndian = encodeUnsignedBigInt(number);
   return convertToLittleEndian(bytesAsBigEndian);
 }
 
 Uint8List encodeUnsignedBigInt(BigInt number) {
-  return utils.encodeBigIntAsUnsigned(number);
+  if (number == BigInt.zero) {
+    return Uint8List.fromList([0]);
+  }
+  var size = (number.bitLength + (number.isNegative ? 8 : 7)) >> 3;
+  var result = Uint8List(size);
+  for (var i = 0; i < size; i++) {
+    result[size - i - 1] = (number & BigInt.from(0xff)).toInt();
+    number = number >> 8;
+  }
+  return result;
 }
 
 class HexStringBytesJsonConverter implements JsonConverter<Uint8List, String> {
@@ -66,7 +74,8 @@ class HexStringBytesJsonConverter implements JsonConverter<Uint8List, String> {
   }
 }
 
-class NullableHexStringBytesJsonConverter implements JsonConverter<Uint8List?, String?> {
+class NullableHexStringBytesJsonConverter
+    implements JsonConverter<Uint8List?, String?> {
   const NullableHexStringBytesJsonConverter();
 
   @override

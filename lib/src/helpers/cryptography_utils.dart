@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
@@ -7,7 +6,8 @@ import 'package:pointycastle/export.dart' as pc;
 
 // Some crpytography utils for standalone usage.
 
-Future<bool> verifySignatureEd25519(Uint8List publicKeyBytes, Uint8List messageBytes, Uint8List signatureBytes) async {
+Future<bool> verifySignatureEd25519(Uint8List publicKeyBytes,
+    Uint8List messageBytes, Uint8List signatureBytes) async {
   final publicKey = crypt.SimplePublicKey(
     List<int>.unmodifiable(publicKeyBytes),
     type: crypt.KeyPairType.ed25519,
@@ -17,20 +17,23 @@ Future<bool> verifySignatureEd25519(Uint8List publicKeyBytes, Uint8List messageB
   return await algorithm.verify(messageBytes, signature: signature);
 }
 
-Future<bool> verifySignatureSecp256k1(Uint8List publicKeyBytes, Uint8List messageBytes, Uint8List signatureBytes) {
+Future<bool> verifySignatureSecp256k1(Uint8List publicKeyBytes,
+    Uint8List messageBytes, Uint8List signatureBytes) {
   return Future(() {
-    final pc.ECDomainParameters domainParams = pc.ECDomainParameters("secp256k1");
+    final pc.ECDomainParameters domainParams =
+        pc.ECDomainParameters("secp256k1");
     final pc.ECPoint Q = domainParams.curve.decodePoint(publicKeyBytes)!;
     final signer = pc.Signer("SHA-256/ECDSA");
     final pc.ECPublicKey publicKey = pc.ECPublicKey(Q, domainParams);
     signer.init(false, pc.PublicKeyParameter(publicKey));
-    return signer.verifySignature(messageBytes, secp256k1SignatureBytesToECSignature(signatureBytes));
+    return signer.verifySignature(
+        messageBytes, secp256k1SignatureBytesToECSignature(signatureBytes));
   });
 }
 
 pc.ECSignature secp256k1SignatureBytesToECSignature(Uint8List signatureBytes) {
-  BigInt r = BigInt.parse("0x" + hex.encode(signatureBytes.sublist(0, 32)));
-  BigInt s = BigInt.parse("0x" + hex.encode(signatureBytes.sublist(32, 64)));
+  BigInt r = BigInt.parse("0x${hex.encode(signatureBytes.sublist(0, 32))}");
+  BigInt s = BigInt.parse("0x${hex.encode(signatureBytes.sublist(32, 64))}");
   return pc.ECSignature(r, s);
 }
 

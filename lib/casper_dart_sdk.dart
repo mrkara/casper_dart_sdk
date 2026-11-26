@@ -9,7 +9,8 @@ export 'src/jsonrpc/get_block.dart' show GetBlockResult;
 export 'src/jsonrpc/get_balance.dart' show GetBalanceResult;
 export 'src/jsonrpc/get_block_transfers.dart' show GetBlockTransfersResult;
 export 'src/jsonrpc/query_global_state.dart' show QueryGlobalStateResult;
-export 'src/jsonrpc/get_era_info_by_switch_block.dart' show GetEraInfoBySwitchBlockResult;
+export 'src/jsonrpc/get_era_info_by_switch_block.dart'
+    show GetEraInfoBySwitchBlockResult;
 export 'src/jsonrpc/get_auction_info.dart' show GetAuctionInfoResult;
 export 'src/jsonrpc/get_item.dart' show GetItemResult;
 export 'src/jsonrpc/get_dictionary_item.dart' show GetDictionaryItemResult;
@@ -31,7 +32,6 @@ export 'src/types/account.dart';
 export 'src/types/bid.dart';
 export 'src/types/era.dart';
 export 'src/types/named_key.dart';
-export 'src/types/transfer.dart';
 export 'src/types/stored_value.dart';
 export 'src/types/unbonding_purse.dart';
 export 'src/types/delegator.dart';

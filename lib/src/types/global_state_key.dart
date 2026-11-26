@@ -75,14 +75,17 @@ abstract class GlobalStateKey implements ByteSerializable {
 class AccountHashKey extends GlobalStateKey {
   AccountHashKey(String key) : super.fromKey(KeyIdentifier.account, key);
   AccountHashKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  AccountHashKey.fromPublicKey(ClPublicKey publicKey) : super.fromPrefixedKey(publicKey.accountHash);
-  AccountHashKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.account, bytes);
+  AccountHashKey.fromPublicKey(ClPublicKey publicKey)
+      : super.fromPrefixedKey(publicKey.accountHash);
+  AccountHashKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.account, bytes);
 }
 
 class HashKey extends GlobalStateKey {
   HashKey(String key) : super.fromKey(KeyIdentifier.hash, key);
   HashKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  HashKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.hash, bytes);
+  HashKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.hash, bytes);
 }
 
 /// Represents an unforgeable reference, containing an address in the network's global storage and
@@ -95,7 +98,8 @@ class Uref extends GlobalStateKey {
   /// Bytes of the key without the key identifier byte and the access rights byte
   @override
   Uint8List get headlessBytes {
-    final headless = key.substring(key.indexOf("-") + 1, key.lastIndexOf("-")).toLowerCase();
+    final headless =
+        key.substring(key.indexOf("-") + 1, key.lastIndexOf("-")).toLowerCase();
     return Uint8List.fromList(hex.decode(headless));
   }
 
@@ -106,17 +110,19 @@ class Uref extends GlobalStateKey {
     int partCount = (isPrefixed ? 3 : 2);
     final parts = value.split("-");
     if (parts.length != partCount) {
-      throw ArgumentError.value(
-          value, 'value', 'Uref key must contain 3 (or 2 if not prefixed) parts, separated by "-"');
+      throw ArgumentError.value(value, 'value',
+          'Uref key must contain 3 (or 2 if not prefixed) parts, separated by "-"');
     }
     keyIdentifier = KeyIdentifier.uref;
     final key = parts[isPrefixed ? 1 : 0];
     final accessRightsStr = parts[isPrefixed ? 2 : 1];
     if (key.length != 64) {
-      throw ArgumentError.value(value, 'value', 'Uref key must contain 32 bytes');
+      throw ArgumentError.value(
+          value, 'value', 'Uref key must contain 32 bytes');
     }
     final bytes = GlobalStateKey._verifyChecksum(key);
-    this.key = keyIdentifier.prefix + Cep57Checksum.encode(bytes) + "-" + accessRightsStr;
+    this.key =
+        "${keyIdentifier.prefix}${Cep57Checksum.encode(bytes)}-$accessRightsStr";
     accessRights = AccessRightsExt.fromString(accessRightsStr);
   }
 
@@ -162,7 +168,8 @@ extension AccessRightsExt on AccessRights {
       case 7:
         return AccessRights.readAddWrite;
       default:
-        throw ArgumentError.value(accessRightsStr, 'accessRightsStr', 'Unknown access rights value');
+        throw ArgumentError.value(
+            accessRightsStr, 'accessRightsStr', 'Unknown access rights value');
     }
   }
 }
@@ -170,25 +177,29 @@ extension AccessRightsExt on AccessRights {
 class TransferKey extends GlobalStateKey {
   TransferKey(String key) : super.fromKey(KeyIdentifier.transfer, key);
   TransferKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  TransferKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.transfer, bytes);
+  TransferKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.transfer, bytes);
 }
 
 class DeployInfoKey extends GlobalStateKey {
   DeployInfoKey(String key) : super.fromKey(KeyIdentifier.deployInfo, key);
   DeployInfoKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  DeployInfoKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.deployInfo, bytes);
+  DeployInfoKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.deployInfo, bytes);
 }
 
 class EraInfoKey extends GlobalStateKey {
   EraInfoKey(String key) : super.fromKey(KeyIdentifier.eraInfo, key);
   EraInfoKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  EraInfoKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.eraInfo, bytes);
+  EraInfoKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.eraInfo, bytes);
 }
 
 class BalanceKey extends GlobalStateKey {
   BalanceKey(String key) : super.fromKey(KeyIdentifier.balance, key);
   BalanceKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  BalanceKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.balance, bytes);
+  BalanceKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.balance, bytes);
 }
 
 class BidKey extends GlobalStateKey {
@@ -200,16 +211,29 @@ class BidKey extends GlobalStateKey {
 class WithdrawKey extends GlobalStateKey {
   WithdrawKey(String key) : super.fromKey(KeyIdentifier.withdraw, key);
   WithdrawKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  WithdrawKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.withdraw, bytes);
+  WithdrawKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.withdraw, bytes);
 }
 
 class DictionaryKey extends GlobalStateKey {
   DictionaryKey(String key) : super.fromKey(KeyIdentifier.dictionary, key);
   DictionaryKey.fromPrefixedKey(String key) : super.fromPrefixedKey(key);
-  DictionaryKey.fromBytes(Uint8List bytes) : super.fromBytes(KeyIdentifier.dictionary, bytes);
+  DictionaryKey.fromBytes(Uint8List bytes)
+      : super.fromBytes(KeyIdentifier.dictionary, bytes);
 }
 
-enum KeyIdentifier { account, hash, uref, transfer, deployInfo, eraInfo, balance, bid, withdraw, dictionary }
+enum KeyIdentifier {
+  account,
+  hash,
+  uref,
+  transfer,
+  deployInfo,
+  eraInfo,
+  balance,
+  bid,
+  withdraw,
+  dictionary
+}
 
 extension KeyIdentifierExt on KeyIdentifier {
   String get prefix {
@@ -318,7 +342,8 @@ extension KeyIdentifierExt on KeyIdentifier {
 }
 
 // Json converters
-class GlobalStateKeyJsonConverter extends JsonConverter<GlobalStateKey, String> {
+class GlobalStateKeyJsonConverter
+    extends JsonConverter<GlobalStateKey, String> {
   const GlobalStateKeyJsonConverter();
 
   @override
@@ -356,7 +381,8 @@ class GlobalStateKeyJsonConverter extends JsonConverter<GlobalStateKey, String> 
   }
 }
 
-class AccountHashKeyJsonConverter extends JsonConverter<AccountHashKey, String> {
+class AccountHashKeyJsonConverter
+    extends JsonConverter<AccountHashKey, String> {
   const AccountHashKeyJsonConverter();
 
   @override

@@ -21,14 +21,16 @@ class ClPublicKey {
   /// Creates a [ClPublicKey] object from a hexadecimal string representation of bytes.
   /// [hex] includes the key algorithm identifier byte as the first byte.
   factory ClPublicKey.fromHex(String hex) {
-    final Tuple2<Cep57ChecksumResult, Uint8List> decoded = Cep57Checksum.decode(hex.substring(2));
+    final Tuple2<Cep57ChecksumResult, Uint8List> decoded =
+        Cep57Checksum.decode(hex.substring(2));
 
     if (decoded.item1 == Cep57ChecksumResult.invalid) {
       throw ArgumentError('Public key checksum verification failed');
     }
 
     final Uint8List bytes = decoded.item2;
-    KeyAlgorithm algorithm = KeyAlgorithmExt.fromIdentifierByte(hexStringToInt(hex.substring(0, 2)));
+    KeyAlgorithm algorithm =
+        KeyAlgorithmExt.fromIdentifierByte(hexStringToInt(hex.substring(0, 2)));
 
     return ClPublicKey(bytes, algorithm);
   }
@@ -50,7 +52,8 @@ class ClPublicKey {
     }
   }
 
-  String get accountHex => keyAlgorithm.identifierByteHex + Cep57Checksum.encode(bytes);
+  String get accountHex =>
+      keyAlgorithm.identifierByteHex + Cep57Checksum.encode(bytes);
 
   /// Returns prefixed account hash key
   String get accountHash {
@@ -62,7 +65,7 @@ class ClPublicKey {
     blake2.update(bytes, 0, bytes.length);
     Uint8List hash = Uint8List(32);
     blake2.doFinal(hash, 0);
-    return "account-hash-" + Cep57Checksum.encode(hash);
+    return "account-hash-${Cep57Checksum.encode(hash)}";
   }
 
   @override
@@ -97,7 +100,8 @@ class ClPublicKeyJsonConverter implements JsonConverter<ClPublicKey, String> {
   factory ClPublicKeyJsonConverter.create() => ClPublicKeyJsonConverter();
 }
 
-class ClPublicKeyNullableJsonConverter implements JsonConverter<ClPublicKey?, String?> {
+class ClPublicKeyNullableJsonConverter
+    implements JsonConverter<ClPublicKey?, String?> {
   const ClPublicKeyNullableJsonConverter();
 
   @override
@@ -116,7 +120,8 @@ class ClPublicKeyNullableJsonConverter implements JsonConverter<ClPublicKey?, St
     return object.accountHex;
   }
 
-  factory ClPublicKeyNullableJsonConverter.create() => ClPublicKeyNullableJsonConverter();
+  factory ClPublicKeyNullableJsonConverter.create() =>
+      ClPublicKeyNullableJsonConverter();
 }
 
 // @JsonListConverter<ClPublicKey, String>(ClPublicKeyJsonConverter.create) annotation
