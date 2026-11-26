@@ -66,4 +66,4 @@ dart test test/utils_test.dart
 ```
 
 #### Test Environment
-The environment variable `CASPER_TEST_NODE_RPC_URL` must be set to run the tests. Bare in mind that currently, some of the tests might be specific to the test node `http://138.201.54.44:7777/rpc`. The server responses should be mocked instead of relying on a single test node.
+The environment variable `CASPER_TEST_NODE_RPC_URL` must be set to run the tests. Bare in mind that currently, some of the tests might be specific to the test node `http://138.201.54.44:7777/rpc`. The server responses should be mocked instead of relying on a single test node..
