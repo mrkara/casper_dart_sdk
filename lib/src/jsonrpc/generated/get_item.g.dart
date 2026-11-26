@@ -23,8 +23,8 @@ Map<String, dynamic> _$GetItemParamsToJson(GetItemParams instance) =>
 GetItemResult _$GetItemResultFromJson(Map<String, dynamic> json) =>
     GetItemResult(
       json['api_version'],
-      const StoredValueJsonConverter()
-          .fromJson(json['stored_value'] as Map<String, dynamic>),
+      _$JsonConverterFromJson<Map<String, dynamic>, dynamic>(
+          json['stored_value'], const StoredValueJsonConverter().fromJson),
       json['merkle_proof'] as String,
     );
 
@@ -35,3 +35,9 @@ Map<String, dynamic> _$GetItemResultToJson(GetItemResult instance) =>
           const StoredValueJsonConverter().toJson(instance.storedValue),
       'merkle_proof': instance.merkleProof,
     };
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);

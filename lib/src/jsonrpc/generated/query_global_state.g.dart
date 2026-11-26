@@ -26,8 +26,8 @@ QueryGlobalStateResult _$QueryGlobalStateResultFromJson(
         Map<String, dynamic> json) =>
     QueryGlobalStateResult(
       json['api_version'],
-      const StoredValueJsonConverter()
-          .fromJson(json['stored_value'] as Map<String, dynamic>),
+      _$JsonConverterFromJson<Map<String, dynamic>, dynamic>(
+          json['stored_value'], const StoredValueJsonConverter().fromJson),
       json['block_header'] == null
           ? null
           : BlockHeader.fromJson(json['block_header'] as Map<String, dynamic>),
@@ -43,3 +43,9 @@ Map<String, dynamic> _$QueryGlobalStateResultToJson(
           const StoredValueJsonConverter().toJson(instance.storedValue),
       'merkle_proof': instance.merkleProof,
     };
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);

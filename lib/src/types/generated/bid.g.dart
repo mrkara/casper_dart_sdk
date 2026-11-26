@@ -8,7 +8,7 @@ part of '../bid.dart';
 
 Bid _$BidFromJson(Map<String, dynamic> json) => Bid(
       const UrefJsonConverter().fromJson(json['bonding_purse'] as String),
-      json['delegation_rate'] as int,
+      (json['delegation_rate'] as num).toInt(),
       const DelegatorJsonListConverter().fromJson(json['delegators'] as List),
       json['inactive'] as bool,
       BigInt.parse(json['staked_amount'] as String),

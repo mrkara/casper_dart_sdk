@@ -32,8 +32,8 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
 
 ActionThresholds _$ActionThresholdsFromJson(Map<String, dynamic> json) =>
     ActionThresholds(
-      json['deployment'] as int,
-      json['key_management'] as int,
+      (json['deployment'] as num).toInt(),
+      (json['key_management'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ActionThresholdsToJson(ActionThresholds instance) =>
@@ -46,7 +46,7 @@ AssociatedKey _$AssociatedKeyFromJson(Map<String, dynamic> json) =>
     AssociatedKey(
       const AccountHashKeyJsonConverter()
           .fromJson(json['account_hash'] as String),
-      json['weight'] as int,
+      (json['weight'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AssociatedKeyToJson(AssociatedKey instance) =>

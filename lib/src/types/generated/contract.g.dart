@@ -63,7 +63,7 @@ Map<String, dynamic> _$EntryPointToJson(EntryPoint instance) =>
     <String, dynamic>{
       'access': const EntryPointAccessJsonConverter().toJson(instance.access),
       'args': instance.args.map((e) => e.toJson()).toList(),
-      'entry_point_type': _$EntryPointTypeEnumMap[instance.entryPointType],
+      'entry_point_type': _$EntryPointTypeEnumMap[instance.entryPointType]!,
       'name': instance.name,
       'ret': const ClTypeDescriptorJsonConverter().toJson(instance.returnType),
     };
@@ -85,8 +85,8 @@ Map<String, dynamic> _$ParameterToJson(Parameter instance) => <String, dynamic>{
 
 DisabledVersion _$DisabledVersionFromJson(Map<String, dynamic> json) =>
     DisabledVersion(
-      json['contract_version'] as int,
-      json['protocol_version_major'] as int,
+      (json['contract_version'] as num).toInt(),
+      (json['protocol_version_major'] as num).toInt(),
     );
 
 Map<String, dynamic> _$DisabledVersionToJson(DisabledVersion instance) =>
@@ -98,8 +98,8 @@ Map<String, dynamic> _$DisabledVersionToJson(DisabledVersion instance) =>
 ContractVersion _$ContractVersionFromJson(Map<String, dynamic> json) =>
     ContractVersion(
       json['contract_hash'] as String,
-      json['contract_version'] as int,
-      json['protocol_version_major'] as int,
+      (json['contract_version'] as num).toInt(),
+      (json['protocol_version_major'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ContractVersionToJson(ContractVersion instance) =>

@@ -25,8 +25,8 @@ GetDictionaryItemResult _$GetDictionaryItemResultFromJson(
     GetDictionaryItemResult(
       json['api_version'],
       json['dictionary_key'] as String,
-      const StoredValueJsonConverter()
-          .fromJson(json['stored_value'] as Map<String, dynamic>),
+      _$JsonConverterFromJson<Map<String, dynamic>, dynamic>(
+          json['stored_value'], const StoredValueJsonConverter().fromJson),
       json['merkle_proof'] as String,
     );
 
@@ -39,3 +39,9 @@ Map<String, dynamic> _$GetDictionaryItemResultToJson(
           const StoredValueJsonConverter().toJson(instance.storedValue),
       'merkle_proof': instance.merkleProof,
     };
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);

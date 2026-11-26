@@ -8,7 +8,7 @@ part of '../vesting_schedule.dart';
 
 VestingSchedule _$VestingScheduleFromJson(Map<String, dynamic> json) =>
     VestingSchedule(
-      json['initial_release_timestamp_millis'] as int,
+      (json['initial_release_timestamp_millis'] as num).toInt(),
       (json['locked_amounts'] as List<dynamic>)
           .map((e) => BigInt.parse(e as String))
           .toList(),

@@ -28,8 +28,8 @@ BlockHeader _$BlockHeaderFromJson(Map<String, dynamic> json) => BlockHeader()
   ..eraEnd = json['era_end'] == null
       ? null
       : EraEnd.fromJson(json['era_end'] as Map<String, dynamic>)
-  ..eraId = json['era_id'] as int
-  ..height = json['height'] as int
+  ..eraId = (json['era_id'] as num).toInt()
+  ..height = (json['height'] as num).toInt()
   ..parentHash = json['parent_hash'] as String
   ..protocolVersion = json['protocol_version'] as String
   ..randomBit = json['random_bit'] as bool
@@ -107,7 +107,7 @@ Map<String, dynamic> _$EraReportToJson(EraReport instance) => <String, dynamic>{
     };
 
 Reward _$RewardFromJson(Map<String, dynamic> json) => Reward(
-      json['amount'] as int,
+      (json['amount'] as num).toInt(),
       const ClPublicKeyJsonConverter().fromJson(json['validator'] as String),
     );
 
@@ -119,9 +119,9 @@ Map<String, dynamic> _$RewardToJson(Reward instance) => <String, dynamic>{
 BlockInfoShort _$BlockInfoShortFromJson(Map<String, dynamic> json) =>
     BlockInfoShort(
       const ClPublicKeyJsonConverter().fromJson(json['creator'] as String),
-      json['era_id'] as int,
+      (json['era_id'] as num).toInt(),
       json['hash'] as String,
-      json['height'] as int,
+      (json['height'] as num).toInt(),
       json['state_root_hash'] as String,
       const DateTimeJsonConverter().fromJson(json['timestamp'] as String),
     );

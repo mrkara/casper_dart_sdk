@@ -4,7 +4,7 @@ The Dart package casper_dart_sdk is an SDK for interacting with the Casper Block
 
 ## Requirements
 To use the SDK, you will need to have the following tools installed:
-- [Dart SDK](https://dart.dev/get-dart) version 2.16.1 or higher (haven't been tested before 2.16.1)
+- [Dart SDK](https://dart.dev/get-dart) version 3.0.0 or higher
 
 ## Installation
 

@@ -33,7 +33,7 @@ DeployHeader _$DeployHeaderFromJson(Map<String, dynamic> json) => DeployHeader(
       const DateTimeJsonConverter().fromJson(json['timestamp'] as String),
       const HumanReadableDurationJsonConverter()
           .fromJson(json['ttl'] as String),
-      json['gas_price'] as int,
+      (json['gas_price'] as num).toInt(),
       const Cep57ChecksummedHexJsonConverter()
           .fromJson(json['body_hash'] as String),
       (json['dependencies'] as List<dynamic>).map((e) => e as String).toList(),

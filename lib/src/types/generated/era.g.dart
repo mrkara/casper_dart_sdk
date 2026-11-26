@@ -18,9 +18,9 @@ Map<String, dynamic> _$EraInfoToJson(EraInfo instance) => <String, dynamic>{
 
 EraSummary _$EraSummaryFromJson(Map<String, dynamic> json) => EraSummary(
       json['block_hash'] as String,
-      json['era_id'] as int,
-      const StoredValueJsonConverter()
-          .fromJson(json['stored_value'] as Map<String, dynamic>),
+      (json['era_id'] as num).toInt(),
+      _$JsonConverterFromJson<Map<String, dynamic>, dynamic>(
+          json['stored_value'], const StoredValueJsonConverter().fromJson),
       json['state_root_hash'] as String,
       json['merkle_proof'] as String,
     );
@@ -35,9 +35,15 @@ Map<String, dynamic> _$EraSummaryToJson(EraSummary instance) =>
       'merkle_proof': instance.merkleProof,
     };
 
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
+
 EraValidators _$EraValidatorsFromJson(Map<String, dynamic> json) =>
     EraValidators(
-      json['era_id'] as int,
+      (json['era_id'] as num).toInt(),
       const ValidatorWeightJsonListConverter()
           .fromJson(json['validator_weights'] as List),
     );

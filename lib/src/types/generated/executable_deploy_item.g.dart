@@ -62,7 +62,7 @@ StoredVersionedContractByHashDeployItem
             Map<String, dynamic> json) =>
         StoredVersionedContractByHashDeployItem(
           json['hash'] as String,
-          json['version'] as int?,
+          (json['version'] as num?)?.toInt(),
           json['entry_point'] as String,
           json['args'] == null
               ? const []
@@ -83,7 +83,7 @@ StoredVersionedContractByNameDeployItem
             Map<String, dynamic> json) =>
         StoredVersionedContractByNameDeployItem(
           json['name'] as String,
-          json['version'] as int?,
+          (json['version'] as num?)?.toInt(),
           json['entry_point'] as String,
           json['args'] == null
               ? const []

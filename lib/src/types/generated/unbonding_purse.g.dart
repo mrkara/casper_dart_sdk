@@ -10,7 +10,7 @@ UnbondingPurse _$UnbondingPurseFromJson(Map<String, dynamic> json) =>
     UnbondingPurse(
       BigInt.parse(json['amount'] as String),
       const UrefJsonConverter().fromJson(json['bonding_purse'] as String),
-      json['era_of_creation'] as int,
+      (json['era_of_creation'] as num).toInt(),
       const ClPublicKeyJsonConverter()
           .fromJson(json['unbonder_public_key'] as String),
       const ClPublicKeyJsonConverter()
