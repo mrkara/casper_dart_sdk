@@ -26,7 +26,12 @@ class CasperClient {
   ///
   /// [nodeUri] is the URI of the Casper node to connect to, including its RPC endpoint.
   /// For example, `Uri.parse("http://127.0.0.1:7777/rpc")`
-  CasperClient(Uri nodeUri) : _nodeClient = CasperNodeRpcClient(nodeUri);
+  /// [minimumRpcCallInterval] is the minimum delay between consecutive RPC requests.
+  /// It defaults to [Duration.zero], which applies no delay.
+  CasperClient(Uri nodeUri,
+      {Duration minimumRpcCallInterval = Duration.zero})
+      : _nodeClient =
+            CasperNodeRpcClient(nodeUri, minimumRpcCallInterval);
 
   Future<dynamic> getRpcSchema() async {
     return _nodeClient.getRpcSchema();

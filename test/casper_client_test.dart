@@ -22,7 +22,10 @@ void main() {
       return;
     }
 
-    final node = CasperClient(Uri.parse(serverUrl));
+    final node = CasperClient(
+      Uri.parse(serverUrl),
+      minimumRpcCallInterval: const Duration(seconds: 6),
+    );
 
     // TODO: Mocking client responses with ground truths could be better instead of relying on a test node.
     // TODO: Some of the tests are specific to a particular test node. Mock the server and test against that.

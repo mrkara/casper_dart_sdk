@@ -16,7 +16,8 @@ import 'package:casper_dart_sdk/src/jsonrpc/put_deploy.dart';
 import 'package:casper_dart_sdk/src/jsonrpc/query_global_state.dart';
 
 class CasperNodeRpcClient extends JsonRpcHttpServerProxy {
-  CasperNodeRpcClient(url) : super(url, {'User-Agent': 'CasperDart/0.1'});
+  CasperNodeRpcClient(url, [Duration minimumRpcCallInterval = Duration.zero])
+      : super(url, {'User-Agent': 'CasperDart/0.1'}, minimumRpcCallInterval);
 
   Future<dynamic> getRpcSchema() async {
     return await call(RpcMethodName.rpcDiscover);
@@ -27,7 +28,7 @@ class CasperNodeRpcClient extends JsonRpcHttpServerProxy {
   }
 
   Future<GetStateRootHashResult> getStateRootHash([GetStateRootHashParams? params]) async {
-    return GetStateRootHashResult.fromJson(await call(RpcMethodName.chainGetStateRootHash, params));
+    return GetStateRootHashResult.fromJson(await call(RpcMethodName.chainGetStateRootHash, params?.toJson()));
   }
 
   Future<GetDeployResult> getDeploy(GetDeployParams params) async {
